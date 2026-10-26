@@ -15,8 +15,10 @@ export default function App() {
         const data = await fetchPosts(controller.signal);
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-        // Ham hata yakalama (AbortError kontrolü henüz yok)
-        dispatch({ type: 'FETCH_ERROR', payload: err.message });
+        // İptal (cleanup) hatalarını sessize al, gerçek API hatalarını state'e aktar
+        if (err.name !== 'AbortError') {
+          dispatch({ type: 'FETCH_ERROR', payload: err.message || 'An error occurred' });
+        }
       }
     }
 
